@@ -633,6 +633,7 @@ gen_headers_out_arm = [
     "linux/watchdog.h",
     "linux/wil6210_uapi.h",
     "linux/wimax.h",
+    "linux/wireguard.h",
     "linux/wireless.h",
     "linux/wmi.h",
     "linux/x25.h",
