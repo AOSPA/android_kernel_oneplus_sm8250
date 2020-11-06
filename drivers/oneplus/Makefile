@@ -12,7 +12,6 @@ obj-y += power/
 obj-y += vibrator/
 #obj-y += power/
 obj-y += oneplus_healthinfo/
-obj-y += mm/
 obj-y += opslalib/
 obj-y += vl53L1/
 obj-$(CONFIG_OP_FREEZER) += op_freezer/
