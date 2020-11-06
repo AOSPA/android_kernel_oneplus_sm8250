@@ -30,9 +30,6 @@
 #define NETLINK_CRYPTO		21	/* Crypto layer */
 #define NETLINK_SMC		22	/* SMC monitoring */
 #define NETLINK_SOCKEV		23	/* Socket Administrative Events */
-#ifdef CONFIG_OP_FREEZER
-#define NETLINK_OP_FREEZER       28      /* Socket for freezing solution*/
-#endif
 #define NETLINK_INET_DIAG	NETLINK_SOCK_DIAG
 /* WIFI MODIFICATION */
 #define NETLINK_OP_SLA		29	/* SLA NETLINK SOCK */
