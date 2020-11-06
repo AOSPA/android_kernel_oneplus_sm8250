@@ -79,11 +79,7 @@
 #define IF_HAVE_PG_IDLE(flag,string)
 #endif
 
-#ifdef CONFIG_MEMPLUS
-#define IF_HAVE_PG_WILLNEED(flag, string) ,{1UL << flag, string}
-#else
 #define IF_HAVE_PG_WILLNEED(flag, string)
-#endif
 
 #define __def_pageflag_names						\
 	{1UL << PG_locked,		"locked"	},		\
