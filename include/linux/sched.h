@@ -1905,11 +1905,6 @@ static inline bool is_percpu_thread(void)
 #define PFA_SPEC_IB_DISABLE		5	/* Indirect branch speculation restricted */
 #define PFA_SPEC_IB_FORCE_DISABLE	6	/* Indirect branch speculation permanently restricted */
 
-#ifdef CONFIG_CGROUP_IOLIMIT
-/* add for pg */
-#define PFA_IN_PAGEFAULT		27
-#endif
-
 #define TASK_PFA_TEST(name, func)					\
 	static inline bool task_##func(struct task_struct *p)		\
 	{ return test_bit(PFA_##name, &p->atomic_flags); }
@@ -1928,12 +1923,6 @@ TASK_PFA_SET(NO_NEW_PRIVS, no_new_privs)
 TASK_PFA_TEST(SPREAD_PAGE, spread_page)
 TASK_PFA_SET(SPREAD_PAGE, spread_page)
 TASK_PFA_CLEAR(SPREAD_PAGE, spread_page)
-
-#ifdef CONFIG_CGROUP_IOLIMIT
-TASK_PFA_TEST(IN_PAGEFAULT, in_pagefault)
-TASK_PFA_SET(IN_PAGEFAULT, in_pagefault)
-TASK_PFA_CLEAR(IN_PAGEFAULT, in_pagefault)
-#endif
 
 TASK_PFA_TEST(SPREAD_SLAB, spread_slab)
 TASK_PFA_SET(SPREAD_SLAB, spread_slab)

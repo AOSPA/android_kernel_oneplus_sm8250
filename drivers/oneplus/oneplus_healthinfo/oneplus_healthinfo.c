@@ -20,9 +20,6 @@
 #include <linux/sched.h>
 #include <linux/sched/signal.h>
 #endif
-#ifdef CONFIG_ONEPLUS_MEM_MONITOR
-#include <linux/oem/memory_monitor.h>
-#endif
 /*2020-06-22 ，OSP-5970 , monitor cpu info **/
 #include <linux/cpufreq.h>
 #include "../../../../kernel/sched/sched.h"
@@ -1384,41 +1381,6 @@ static const struct file_operations proc_overload_fops = {
 	.read = overload_read,
 };
 
-/******  mem monitor read  ******/
-#ifdef CONFIG_ONEPLUS_MEM_MONITOR
-static ssize_t alloc_wait_read(struct file *filp, char __user *buff, size_t count, loff_t *off)
-{
-	char page[1024] = {0};
-	int len = 0;
-
-	len = sprintf(page, "total_alloc_wait_h_cnt: %lld\n""total_alloc_wait_l_cnt: %lld\n"
-				"fg_alloc_wait_h_cnt: %lld\n""fg_alloc_wait_l_cnt: %lld\n"
-				"total_alloc_wait_max_ms: %lld\n""total_alloc_wait_max_order: %lld\n"
-				"fg_alloc_wait_max_ms: %lld\n""fg_alloc_wait_max_order: %lld\n"
-				"alloc_wait_ctrl: %s\n""alloc_wait_logon: %s\n""alloc_wait_trig: %s\n",
-				allocwait_para.total_alloc_wait_h_cnt, allocwait_para.total_alloc_wait_l_cnt,
-				allocwait_para.fg_alloc_wait_h_cnt, allocwait_para.fg_alloc_wait_l_cnt,
-				allocwait_para.total_alloc_wait_max_ms, allocwait_para.total_alloc_wait_max_order,
-				allocwait_para.fg_alloc_wait_max_ms, allocwait_para.fg_alloc_wait_max_order,
-				ohm_memmon_ctrl ? "true" : "false", ohm_memmon_logon ? "true":"false", ohm_memmon_trig ? "true":"false");
-
-	if (len > *off) {
-		len -= *off;
-	} else {
-		len = 0;
-	}
-	if (raw_copy_to_user(buff, page, (len < count ? len : count))) {
-		return -EFAULT;
-	}
-	*off += len < count ? len : count;
-	return (len < count ? len : count);
-}
-
-static const struct file_operations proc_alloc_wait_fops = {
-	.read = alloc_wait_read,
-};
-#endif /*CONFIG_ONEPLUS_MEM_MONITOR*/
-
 /******  Proc para   ******/
 static ssize_t ohm_para_read(struct file *filp, char __user *buff, size_t count, loff_t *off)
 {
@@ -1703,14 +1665,6 @@ static int __init oneplus_healthinfo_init(void)
 			goto ERROR_INIT_VERSION;
 	}
 
-#ifdef CONFIG_ONEPLUS_MEM_MONITOR
-	pentry = proc_create("alloc_wait", S_IRUGO, oneplus_healthinfo, &proc_alloc_wait_fops);
-	if (!pentry) {
-		ohm_err("create alloc_wait proc failed.\n");
-		goto ERROR_INIT_VERSION;
-	}
-
-#endif /*CONFIG_ONEPLUS_MEM_MONITOR*/
 #ifdef CONFIG_ONEPLUS_TASKLOAD_INFO
 	sample_window.timestamp = jiffies;
 	sample_window.window_index = 0;
