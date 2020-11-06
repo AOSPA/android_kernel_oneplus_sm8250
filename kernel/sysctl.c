@@ -110,9 +110,6 @@ extern int core_uses_pid;
 extern char core_pattern[];
 extern unsigned int core_pipe_limit;
 #endif
-#ifdef CONFIG_DIRECT_SWAPPINESS
-extern int vm_direct_swapiness;
-#endif
 extern int pid_max;
 extern int extra_free_kbytes;
 extern int pid_max_min, pid_max_max;
@@ -141,9 +138,6 @@ static unsigned long one_ul = 1;
 static unsigned long long_max = LONG_MAX;
 static int one_hundred = 100;
 static int one_thousand = 1000;
-#ifdef CONFIG_DIRECT_SWAPPINESS
-static int two_hundred = 200;
-#endif
 #ifdef CONFIG_PANIC_FLUSH
 unsigned long sysctl_blkdev_issue_flush_count;
 #endif
@@ -1777,24 +1771,9 @@ static struct ctl_table vm_table[] = {
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec_minmax,
 		.extra1		= &zero,
-#ifdef CONFIG_DIRECT_SWAPPINESS
-		.extra2		= &two_hundred,
-#else
 		.extra2		= &one_hundred,
-#endif
 
 	},
-#ifdef CONFIG_DIRECT_SWAPPINESS
-	{
-		.procname	= "direct_swappiness",
-		.data		= &vm_direct_swapiness,
-		.maxlen		= sizeof(vm_direct_swapiness),
-		.mode		= 0644,
-		.proc_handler	= proc_dointvec_minmax,
-		.extra1		= &zero,
-		.extra2		= &two_hundred,
-	},
-#endif
 	{
 		.procname       = "want_old_faultaround_pte",
 		.data           = &want_old_faultaround_pte,

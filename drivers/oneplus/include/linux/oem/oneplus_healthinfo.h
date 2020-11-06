@@ -25,11 +25,6 @@
 /*2020-06-22 ，OSP-5970 , monitor cpu info **/
 #include <linux/ratelimit.h>
 
-
-#ifdef CONFIG_ONEPLUS_MEM_MONITOR
-#include <linux/oem/memory_monitor.h>
-#endif /*CONFIG_ONEPLUS_MEM_MONITOR*/
-
 #define ohm_err(fmt, ...) \
 	printk(KERN_ERR "[OHM_ERR][%s]"fmt, __func__, ##__VA_ARGS__)
 #define ohm_debug(fmt, ...) \

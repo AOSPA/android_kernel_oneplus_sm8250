@@ -36,9 +36,6 @@
 #ifdef CONFIG_OPCHAIN
 #include <oneplus/uxcore/opchain_helper.h>
 #endif
-#ifdef CONFIG_OP_FREEZER
-#include <oneplus/op_freezer/op_freezer.h>
-#endif
 
 struct list_lru binder_alloc_lru;
 
@@ -368,9 +365,6 @@ static struct binder_buffer *binder_alloc_new_buf_locked(
 	void __user *end_page_addr;
 	size_t size, data_offsets_size;
 	int ret;
-#ifdef CONFIG_OP_FREEZER
-		struct task_struct *p = NULL;
-#endif
 
 	if (!binder_alloc_get_vma(alloc)) {
 		binder_alloc_debug(BINDER_DEBUG_USER_ERROR,
@@ -395,21 +389,6 @@ static struct binder_buffer *binder_alloc_new_buf_locked(
 				alloc->pid, extra_buffers_size);
 		return ERR_PTR(-EINVAL);
 	}
-
-#ifdef CONFIG_OP_FREEZER
-		if (is_async
-			&& (alloc->free_async_space < 3 * (size + sizeof(struct binder_buffer))
-			|| (alloc->free_async_space < ((alloc->buffer_size / 2) * 9 / 10)))) {
-			rcu_read_lock();
-			p = find_task_by_vpid(alloc->pid);
-			rcu_read_unlock();
-			if (p != NULL && is_frozen_tg(p)) {
-				op_freezer_report(ASYNC_BINDER,
-						task_tgid_nr(current), task_uid(p).val,
-						"free_buffer_full", -1);
-			}
-		}
-#endif
 
 	if (is_async &&
 	    alloc->free_async_space < size + sizeof(struct binder_buffer)) {
