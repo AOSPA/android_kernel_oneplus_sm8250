@@ -1613,10 +1613,6 @@ static int copy_signal(unsigned long clone_flags, struct task_struct *tsk)
 	sig->oom_score_adj = current->signal->oom_score_adj;
 	sig->oom_score_adj_min = current->signal->oom_score_adj_min;
 
-	/* CONFIG_MEMPLUS add start by bin.zhong@ASTI */
-	memplus_init_task_reclaim_stat(sig);
-	/* add end */
-
 	mutex_init(&sig->cred_guard_mutex);
 
 	return 0;
