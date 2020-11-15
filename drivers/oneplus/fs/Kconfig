@@ -1,3 +1,2 @@
 # oem device deriver
-source "drivers/oneplus/fs/proc/Kconfig"
 source "drivers/oneplus/fs/f2fs/Kconfig"

@@ -20,9 +20,6 @@
 #include <asm/page.h>
 #include <asm/pgtable.h>
 #include "internal.h"
-#ifdef CONFIG_ONEPLUS_HEALTHINFO
-#include <linux/oem/oneplus_ion.h>
-#endif
 
 void __attribute__((weak)) arch_report_meminfo(struct seq_file *m)
 {
@@ -143,12 +140,6 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
 		    global_node_page_state(NR_SHMEM_THPS) * HPAGE_PMD_NR);
 	show_val_kb(m, "ShmemPmdMapped: ",
 		    global_node_page_state(NR_SHMEM_PMDMAPPED) * HPAGE_PMD_NR);
-#endif
-#ifdef CONFIG_ONEPLUS_HEALTHINFO
-#ifdef CONFIG_ION
-	show_val_kb(m, "IonTotalCache:  ", global_zone_page_state(NR_IONCACHE_PAGES));
-	show_val_kb(m, "IonTotalUsed:   ", ion_total() >> PAGE_SHIFT);
-#endif
 #endif
 
 #ifdef CONFIG_CMA

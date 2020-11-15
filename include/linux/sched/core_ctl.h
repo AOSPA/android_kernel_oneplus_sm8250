@@ -31,9 +31,4 @@ static inline void core_ctl_notifier_register(struct notifier_block *n) {}
 static inline void core_ctl_notifier_unregister(struct notifier_block *n) {}
 #endif
 
-#ifdef CONFIG_CONTROL_CENTER
-int core_ctl_op_boost(bool boost, int level);
-#else
-static inline int core_ctl_op_boost(bool boost, int level) { return 0; }
-#endif
 #endif
