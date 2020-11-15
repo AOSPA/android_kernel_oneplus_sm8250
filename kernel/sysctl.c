@@ -340,10 +340,6 @@ static int max_sched_tunable_scaling = SCHED_TUNABLESCALING_END-1;
 #endif /* CONFIG_SMP */
 #endif /* CONFIG_SCHED_DEBUG */
 
-#ifdef CONFIG_UXCHAIN
-int sysctl_uxchain_enabled = 1;
-int sysctl_launcher_boost_enabled;
-#endif
 #ifdef CONFIG_COMPACTION
 static int min_extfrag_threshold;
 static int max_extfrag_threshold = 1000;
@@ -439,15 +435,6 @@ static struct ctl_table kern_table[] = {
 	{
 		.procname	= "sched_conservative_pl",
 		.data		= &sysctl_sched_conservative_pl,
-		.maxlen		= sizeof(unsigned int),
-		.mode		= 0644,
-		.proc_handler	= proc_dointvec_minmax,
-		.extra1		= &zero,
-		.extra2		= &one,
-	},
-	{
-		.procname	= "sched_skip_affinity",
-		.data		= &sysctl_sched_skip_affinity,
 		.maxlen		= sizeof(unsigned int),
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec_minmax,
@@ -1625,23 +1612,6 @@ static struct ctl_table kern_table[] = {
 		.proc_handler	= proc_dointvec,
 	},
 #endif
-#ifdef CONFIG_UXCHAIN
-	{
-		.procname	= "uxchain_enabled",
-		.data		= &sysctl_uxchain_enabled,
-		.maxlen = sizeof(int),
-		.mode		= 0666,
-		.proc_handler = proc_dointvec,
-	},
-	{
-		.procname	= "launcher_boost_enabled",
-		.data		= &sysctl_launcher_boost_enabled,
-		.maxlen = sizeof(int),
-		.mode		= 0666,
-		.proc_handler = proc_dointvec,
-	},
-#endif
-
 	{ }
 };
 

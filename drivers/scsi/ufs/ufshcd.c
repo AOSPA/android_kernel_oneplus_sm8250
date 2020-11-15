@@ -60,11 +60,6 @@ static int ufshcd_wb_buf_flush_disable(struct ufs_hba *hba);
 static bool ufshcd_wb_is_buf_flush_needed(struct ufs_hba *hba);
 static int ufshcd_wb_toggle_flush_during_h8(struct ufs_hba *hba, bool set);
 
-/* ufs slot status */
-#ifdef CONFIG_ONEPLUS_HEALTHINFO
-unsigned long ufs_outstanding;
-#endif
-
 static int err_state;
 static void ufsproc_set_err_state(struct ufs_hba *hba)
 {
@@ -4096,12 +4091,6 @@ send_orig_cmd:
 
 	err = ufshcd_send_command(hba, tag);
 
-#ifdef CONFIG_ONEPLUS_HEALTHINFO
-	/* Add for monitor ufs driver io time */
-	ufs_outstanding = hba->outstanding_reqs;
-	cmd->request->ufs_io_start = ktime_get();
-#endif
-
 	if (err) {
 		spin_unlock_irqrestore(hba->host->host_lock, flags);
 		scsi_dma_unmap(lrbp->cmd);
@@ -6962,13 +6951,6 @@ static void __ufshcd_transfer_req_compl(struct ufs_hba *hba,
 			 */
 			__ufshcd_release(hba, false);
 			__ufshcd_hibern8_release(hba, false);
-
-#ifdef CONFIG_ONEPLUS_HEALTHINFO
-			/* add latency_hist node for ufs latency calculate in sysfs. */
-			if (cmd->request)
-				cmd->request->flash_io_latency = ktime_us_delta(ktime_get(),
-											 cmd->request->ufs_io_start);
-#endif
 
 			/* Do not touch lrbp after scsi done */
 			cmd->scsi_done(cmd);
