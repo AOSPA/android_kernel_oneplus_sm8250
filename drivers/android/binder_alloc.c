@@ -33,8 +33,6 @@
 #include <linux/highmem.h>
 #include "binder_alloc.h"
 #include "binder_trace.h"
-#ifdef CONFIG_OPCHAIN
-#include <oneplus/uxcore/opchain_helper.h>
 #endif
 
 struct list_lru binder_alloc_lru;
@@ -1138,22 +1136,6 @@ binder_alloc_copy_user_to_buffer(struct binder_alloc *alloc,
 	}
 	return 0;
 }
-#ifdef CONFIG_OPCHAIN
-void binder_alloc_pass_binder_buffer(struct binder_alloc *alloc,
-				struct binder_buffer *buffer,
-				binder_size_t buffer_size)
-{
-	struct page *page;
-	pgoff_t pgoff;
-	void *kptr;
-
-	page = binder_alloc_get_page(alloc, buffer,
-						0, &pgoff);
-	kptr = kmap_atomic(page) + pgoff;
-	opc_binder_pass(buffer_size, kptr, 1);
-	kunmap_atomic(kptr);
-}
-#endif
 static void binder_alloc_do_buffer_copy(struct binder_alloc *alloc,
 					bool to_buffer,
 					struct binder_buffer *buffer,
