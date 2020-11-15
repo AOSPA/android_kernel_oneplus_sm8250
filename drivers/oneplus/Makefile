@@ -10,7 +10,6 @@ obj-y += tri_state_key/
 obj-y += power/
 obj-y += vibrator/
 #obj-y += power/
-obj-y += oneplus_healthinfo/
 obj-y += opslalib/
 obj-y += vl53L1/
 obj-y += hung_task_enhance/

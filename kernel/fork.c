@@ -95,12 +95,6 @@
 #include <linux/thread_info.h>
 #include <linux/cpufreq_times.h>
 #include <linux/scs.h>
-#ifdef CONFIG_HOUSTON
-#include <oneplus/houston/houston_helper.h>
-#endif
-#ifdef CONFIG_CONTROL_CENTER
-#include <oneplus/control_center/control_center_helper.h>
-#endif
 
 #include <asm/pgtable.h>
 #include <asm/pgalloc.h>
@@ -143,10 +137,6 @@ int lockdep_tasklist_lock_is_held(void)
 }
 EXPORT_SYMBOL_GPL(lockdep_tasklist_lock_is_held);
 #endif /* #ifdef CONFIG_PROVE_RCU */
-
-#ifdef CONFIG_ONEPLUS_TASKLOAD_INFO
-struct sample_window_t sample_window;
-#endif
 
 int nr_processes(void)
 {
@@ -917,28 +907,6 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)
 	tsk->splice_pipe = NULL;
 	tsk->task_frag.page = NULL;
 	tsk->wake_q.next = NULL;
-#ifdef CONFIG_CONTROL_CENTER
-	tsk->nice_effect_ts = 0;
-	tsk->cached_prio = tsk->static_prio;
-#endif
-/* 2020-05-19 add for uxrealm*/
-#ifdef CONFIG_OPCHAIN
-	tsk->utask_tag = 0;
-	tsk->utask_tag_base = 0;
-	tsk->etask_claim = 0;
-	tsk->claim_cpu = -1;
-	tsk->utask_slave = 0;
-#endif
-
-#ifdef CONFIG_UXCHAIN
-	tsk->static_ux = 0;
-	tsk->dynamic_ux = 0;
-	tsk->ux_depth = 0;
-	tsk->oncpu_time = 0;
-	tsk->prio_saved = 0;
-	tsk->saved_flag = 0;
-#endif
-
 	account_kernel_stack(tsk, 1);
 
 	kcov_task_init(tsk);
@@ -956,10 +924,6 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)
 	tsk->active_memcg = NULL;
 #endif
 
-#ifdef CONFIG_TPD
-	tsk->tpd = 0;
-	tsk->dtpd = 0;
-#endif
 	return tsk;
 
 free_stack:
@@ -2007,10 +1971,6 @@ static __latent_entropy struct task_struct *copy_process(
 
 	task_io_accounting_init(&p->ioac);
 
-#ifdef CONFIG_ONEPLUS_TASKLOAD_INFO
-	task_tli_init(p);
-#endif
-
 	acct_clear_integrals(p);
 
 	posix_cpu_timers_init(p);
@@ -2063,10 +2023,6 @@ static __latent_entropy struct task_struct *copy_process(
 	p->sequential_io	= 0;
 	p->sequential_io_avg	= 0;
 #endif
-#ifdef CONFIG_ONEPLUS_HEALTHINFO
-	p->stuck_trace = 0;
-	memset(&p->oneplus_stuck_info, 0, sizeof(struct oneplus_uifirst_monitor_info));
-#endif /*CONFIG_ONEPLUS_HEALTHINFO*/
 	p->fpack = NULL;
 	/* Perform scheduler related setup. Assign this task to a CPU. */
 	retval = sched_fork(clone_flags, p);
@@ -2304,21 +2260,6 @@ static __latent_entropy struct task_struct *copy_process(
 
 	trace_task_newtask(p, clone_flags);
 	uprobe_copy_process(p, clone_flags);
-
-#if defined(CONFIG_CONTROL_CENTER) || defined(CONFIG_HOUSTON)
-	if (likely(!IS_ERR(p))) {
-#ifdef CONFIG_HOUSTON
-		ht_perf_event_init(p);
-		ht_rtg_init(p);
-#endif
-#ifdef CONFIG_CONTROL_CENTER
-		cc_tsk_init((void *) p);
-#endif
-#ifdef CONFIG_ONEPLUS_FG_OPT
-		p->fuse_boost = 0;
-#endif
-	}
-#endif
 
 	return p;
 
