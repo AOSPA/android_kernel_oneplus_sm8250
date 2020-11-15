@@ -1,4 +1,3 @@
-
 source "drivers/oneplus/coretech/Kconfig"
 source "drivers/oneplus/input/Kconfig"
 source "drivers/oneplus/fs/Kconfig"
@@ -10,7 +9,6 @@ source "drivers/oneplus/misc/Kconfig"
 source "drivers/oneplus/power/Kconfig"
 source "drivers/oneplus/vibrator/Kconfig"
 #source "drivers/oneplus/power/Kconfig"
-source "drivers/oneplus/oneplus_healthinfo/Kconfig"
 source "drivers/oneplus/opslalib/Kconfig"
 source "drivers/oneplus/vl53L1/Kconfig"
 source "drivers/oneplus/hung_task_enhance/Kconfig"

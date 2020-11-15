@@ -18,7 +18,6 @@
 #include <linux/notifier.h>
 #include <linux/spinlock.h>
 #include <linux/sysfs.h>
-#include <oneplus/pccore/pccore_helper.h>
 
 /*********************************************************************
  *                        CPUFREQ INTERFACE                          *
@@ -152,21 +151,6 @@ struct cpufreq_policy {
 
 	/* For cpufreq driver's internal use */
 	void			*driver_data;
-#ifdef CONFIG_ONEPLUS_HEALTHINFO
-	char			change_comm[TASK_COMM_LEN];
-	unsigned int		org_max;
-#endif /*CONFIG_ONEPLUS_HEALTHINFO*/
-#ifdef CONFIG_CONTROL_CENTER
-	unsigned int req_freq;
-	unsigned int cc_min;
-	unsigned int cc_max;
-	spinlock_t cc_lock;
-	bool cc_enable;
-#endif
-
-#ifdef CONFIG_PCCORE
-	unsigned int min_idx;
-#endif
 };
 
 /* Only for ACPI */

@@ -38,60 +38,6 @@ static struct fuse_dev *fuse_get_dev(struct file *file)
 	return READ_ONCE(file->private_data);
 }
 
-#ifdef CONFIG_ONEPLUS_FG_OPT
-#include <linux/cred.h>
-extern unsigned int ht_fuse_boost;
-
-static int fuse_debug;
-module_param_named(fuse_debug, fuse_debug, int, 0664);
-
-static inline bool fuse_can_boost(void)
-{
-	int uid = current_uid().val;
-
-	if (!ht_fuse_boost)
-		return false;
-
-	// fuse_boost enabled and is foreground request
-	if (ht_fuse_boost >= 1 && is_fg(uid))
-		return true;
-
-	// fuse_boost enabled and is system request (include foreground request)
-	if (ht_fuse_boost == 2 && uid < 10000)
-		return true;
-
-	return false;
-}
-
-static inline void fuse_boost_init(struct fuse_req *req)
-{
-	clear_bit(FR_BOOST, &req->flags);
-
-	if (fuse_can_boost())
-		__set_bit(FR_BOOST, &req->flags);
-
-	if (fuse_debug) {
-		int uid = current_uid().val;
-
-		pr_info("current %s %d, fg: %d, uid: %d\n",
-			current->comm, current->pid, current_is_fg(), uid);
-	}
-}
-
-static inline void fuse_boost_active_check(struct fuse_req *req)
-{
-	// boost active check
-	// 1. sysctl: sched_fuse_boost (on)
-	// 2. target: mediaprovider's specific tasks
-	// TODO: add system busy check to not impact ux experience
-	if (ht_fuse_boost)
-		current->fuse_boost = test_bit(FR_BOOST, &req->flags) ? 1 : 0;
-}
-#else
-static inline void fuse_boost_init(struct fuse_req *req) {}
-static inline void fuse_boost_active_check(struct fuse_req *req) {}
-#endif
-
 static void fuse_request_init(struct fuse_req *req, struct page **pages,
 			      struct fuse_page_desc *page_descs,
 			      unsigned npages)
