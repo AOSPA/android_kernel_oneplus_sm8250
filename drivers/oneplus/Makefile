@@ -11,4 +11,3 @@ obj-y += vibrator/
 #obj-y += power/
 obj-y += opslalib/
 obj-y += vl53L1/
-obj-y += hung_task_enhance/
