@@ -23,10 +23,6 @@
 #include <trace/events/sched.h>
 #include <linux/sched/sysctl.h>
 
-#ifdef CONFIG_HUNG_TASK_ENHANCE
-#include <linux/oem/hung_task_enhance.h>
-#endif
-
 /*
  * The number of tasks checked:
  */
@@ -96,65 +92,6 @@ static struct notifier_block panic_block = {
 	.notifier_call = hung_task_panic,
 };
 
-#ifndef CONFIG_HUNG_TASK_ENHANCE
-static void check_hung_task(struct task_struct *t, unsigned long timeout)
-{
-	unsigned long switch_count = t->nvcsw + t->nivcsw;
-
-	/*
-	 * Ensure the task is not frozen.
-	 * Also, skip vfork and any other user process that freezer should skip.
-	 */
-	if (unlikely(t->flags & (PF_FROZEN | PF_FREEZER_SKIP)))
-	    return;
-
-	/*
-	 * When a freshly created task is scheduled once, changes its state to
-	 * TASK_UNINTERRUPTIBLE without having ever been switched out once, it
-	 * musn't be checked.
-	 */
-	if (unlikely(!switch_count))
-		return;
-
-	if (switch_count != t->last_switch_count) {
-		t->last_switch_count = switch_count;
-		t->last_switch_time = jiffies;
-		return;
-	}
-	if (time_is_after_jiffies(t->last_switch_time + timeout * HZ))
-		return;
-
-	trace_sched_process_hang(t);
-
-	if (sysctl_hung_task_panic) {
-		console_verbose();
-		hung_task_show_lock = true;
-		hung_task_call_panic = true;
-	}
-
-	/*
-	 * Ok, the task did not get scheduled for more than 2 minutes,
-	 * complain:
-	 */
-	if (sysctl_hung_task_warnings) {
-		if (sysctl_hung_task_warnings > 0)
-			sysctl_hung_task_warnings--;
-		pr_err("INFO: task %s:%d blocked for more than %ld seconds.\n",
-			t->comm, t->pid, timeout);
-		pr_err("      %s %s %.*s\n",
-			print_tainted(), init_utsname()->release,
-			(int)strcspn(init_utsname()->version, " "),
-			init_utsname()->version);
-		pr_err("\"echo 0 > /proc/sys/kernel/hung_task_timeout_secs\""
-			" disables this message.\n");
-		sched_show_task(t);
-		hung_task_show_lock = true;
-	}
-
-	touch_nmi_watchdog();
-}
-#endif
-
 /*
  * To avoid extending the RCU grace period for an unbounded amount of time,
  * periodically exit the critical section and enter a new one.
@@ -189,10 +126,6 @@ static void check_hung_uninterruptible_tasks(unsigned long timeout)
 	unsigned long last_break = jiffies;
 	struct task_struct *g, *t;
 
-#ifdef CONFIG_HUNG_TASK_ENHANCE
-	unsigned int iowait_count = 0;
-#endif
-
 	/*
 	 * If the system crashed already then all bets are off,
 	 * do not report extra hung tasks:
@@ -210,21 +143,14 @@ static void check_hung_uninterruptible_tasks(unsigned long timeout)
 				goto unlock;
 			last_break = jiffies;
 		}
-#ifdef CONFIG_HUNG_TASK_ENHANCE
-		io_check_hung_detection(t, timeout, &iowait_count, &hung_task_show_lock, &hung_task_call_panic);
-#else
 		/* use "==" to skip the TASK_KILLABLE tasks waiting on NFS */
 		if (t->state == TASK_UNINTERRUPTIBLE)
 			/* Check for selective monitoring */
 			if (!sysctl_hung_task_selective_monitoring ||
 			    t->hang_detection_enabled)
 				check_hung_task(t, timeout);
-#endif
 	}
  unlock:
-#ifdef CONFIG_HUNG_TASK_ENHANCE
-	io_block_panic(&iowait_count, sysctl_hung_task_maxiowait_count);
-#endif
 	rcu_read_unlock();
 	if (hung_task_show_lock)
 		debug_show_all_locks();
