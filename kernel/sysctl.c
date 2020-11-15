@@ -99,10 +99,6 @@
 
 #if defined(CONFIG_SYSCTL)
 
-#ifdef CONFIG_HUNG_TASK_ENHANCE
-#include <linux/oem/hung_task_enhance.h>
-#endif
-
 /* External variables not in a header file. */
 extern int suid_dumpable;
 #ifdef CONFIG_COREDUMP
@@ -1452,25 +1448,6 @@ static struct ctl_table kern_table[] = {
 		.extra1		= &zero,
 		.extra2		= &one,
 	},
-#ifdef CONFIG_HUNG_TASK_ENHANCE
-/* record the hung task killing */
-	{
-		.procname	= "hung_task_kill",
-		.data		= &sysctl_hung_task_kill,
-		.maxlen		= 128,
-		.mode		= 0666,
-		.proc_handler	= proc_dostring,
-	},
-/* Foreground background optimization,change max io count */
-	{
-		.procname	= "hung_task_maxiowait_count",
-		.data		= &sysctl_hung_task_maxiowait_count,
-		.maxlen		= sizeof(int),
-		.mode		= 0644,
-		.proc_handler	= proc_dointvec_minmax,
-		.extra1		= &five,
-	},
-#endif
 #endif
 #ifdef CONFIG_RT_MUTEXES
 	{
