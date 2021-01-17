@@ -30,8 +30,6 @@
 #include "dsi-panel-samsung_sofef00_m_video.dtsi"
 #include "dsi-panel-samsung_dd305_fhd_dsc.dtsi"
 #include "dsi-panel-samsung_amb655x_fhd_dsc.dtsi"
-#include "pxlw/pxlw-iris5.dtsi"
-#include "pxlw/dsi-panel-pxlw.dtsi"
 #include <dt-bindings/clock/mdss-7nm-pll-clk.h>
 
 /*&tlmm {
@@ -947,3 +945,6 @@
 		};
 	};
 };
+
+#include "pxlw/pxlw-iris5.dtsi"
+#include "pxlw/dsi-panel-pxlw.dtsi"
