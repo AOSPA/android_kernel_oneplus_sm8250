@@ -317,6 +317,9 @@ struct dsi_panel {
 	int power_mode;
 
 	int panel_test_gpio;
+#if defined(CONFIG_PXLW_IRIS)
+	bool is_secondary;
+#endif
 	enum dsi_panel_physical_type panel_type;
 };
 
