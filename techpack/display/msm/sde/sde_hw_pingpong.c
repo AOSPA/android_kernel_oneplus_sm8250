@@ -11,6 +11,9 @@
 #include "sde_hw_pingpong.h"
 #include "sde_dbg.h"
 #include "sde_kms.h"
+#if defined(CONFIG_PXLW_IRIS)
+#include "iris/dsi_iris5_api.h"
+#endif
 
 #define PP_TEAR_CHECK_EN                0x000
 #define PP_SYNC_CONFIG_VSYNC            0x004
@@ -343,6 +346,9 @@ static int sde_hw_pp_setup_dither_v1(struct sde_hw_pingpong *pp,
 		return -EINVAL;
 
 	offset += 4;
+#if defined(CONFIG_PXLW_IRIS)
+	iris_sde_update_dither_depth_map(dither_depth_map);
+#endif
 	data = dither_depth_map[dither->c0_bitdepth] & REG_MASK(2);
 	data |= (dither_depth_map[dither->c1_bitdepth] & REG_MASK(2)) << 2;
 	data |= (dither_depth_map[dither->c2_bitdepth] & REG_MASK(2)) << 4;
